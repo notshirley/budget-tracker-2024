@@ -3,7 +3,7 @@ button:hover {
 }
 
 table {
-    color: inherit; /* Ensure table text color adapts to theme */
+    color: inherit; 
 }
 
 .btn {
@@ -14,10 +14,6 @@ table {
     color: white;
 }
 
-.material-icons.save-icon {
-    color: green;
-}
-
 .editing-row {
-    background-color: #f0f0f0; /* Light gray color */
+    background-color: #b59abe;
 }
