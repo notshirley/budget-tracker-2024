@@ -1,8 +1,10 @@
-console.log('DOM fully loaded and parsed');
+// TODO:  Toggle light/dark mode, bootstrap!
+// TODO:  Look into HTML Templates & web components
+// TODO:  Inline table edits - no alerts. List & edit view maybe.
 
 const currentDate = new Date().toLocaleDateString()
 
-let spendings = [
+const expenses = [
     {
         expense: "Groceries",
         price: 50,
@@ -23,44 +25,45 @@ let spendings = [
     }
 ];
 
+
 function updateTable() {
-    var table = document.querySelector('#spendingsTable');
+    const  table = document.querySelector('#spendingsTable');
     table.innerHTML = '';
 
-    var headerRow = document.createElement('tr');
-    var actionsHeader = document.createElement('th');
+    const headerRow = document.createElement('tr');
+    const actionsHeader = document.createElement('th');
     actionsHeader.textContent = 'Actions';
     headerRow.appendChild(actionsHeader);
 
-    var expenseHeader = document.createElement('th');
+    const expenseHeader = document.createElement('th');
     expenseHeader.textContent = 'Expense';
     headerRow.appendChild(expenseHeader);
 
-    var priceHeader = document.createElement('th');
+    const priceHeader = document.createElement('th');
     priceHeader.textContent = 'Price';
     headerRow.appendChild(priceHeader);
 
-    var typeHeader = document.createElement('th');
+    const typeHeader = document.createElement('th');
     typeHeader.textContent = 'Type';
     headerRow.appendChild(typeHeader);
 
-    var dateAddedHeader = document.createElement('th');
+    const dateAddedHeader = document.createElement('th');
     dateAddedHeader.textContent = 'Date Added';
     headerRow.appendChild(dateAddedHeader);
 
     table.appendChild(headerRow);
     
-    spendings.forEach((spending, index) => {
-        var row = document.createElement('tr');
+    expenses.forEach((spending, index) => {
+        const row = document.createElement('tr');
     
-        var buttonsCell = document.createElement('td');
-        var deleteButton = document.createElement('button');
+        const buttonsCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
         deleteButton.innerHTML = '<i class="material-icons table-button">delete</i>';
         deleteButton.onclick = function() {
             removeExpense(index);
         };
 
-        var editButton = document.createElement('button');
+        const editButton = document.createElement('button');
         editButton.innerHTML = '<i class="material-icons table-button">edit</i>';
         editButton.onclick = function() {
             editExpense(index);
@@ -71,27 +74,27 @@ function updateTable() {
     
         row.appendChild(buttonsCell);
         
-        var expenseCell = document.createElement('td');
+        const expenseCell = document.createElement('td');
         expenseCell.textContent = spending.expense;
         row.appendChild(expenseCell);
     
-        var priceCell = document.createElement('td');
+        const priceCell = document.createElement('td');
         priceCell.textContent = spending.price;
         row.appendChild(priceCell);
     
-        var typeCell = document.createElement('td');
+        const typeCell = document.createElement('td');
         typeCell.textContent = spending.type;
         row.appendChild(typeCell);
     
-        var dateAddedCell = document.createElement('td');
+        const dateAddedCell = document.createElement('td');
         dateAddedCell.textContent = spending.dateAdded;
         row.appendChild(dateAddedCell);
         
         table.appendChild(row);
     });
 
-    var addRow = document.createElement('tr');
-    var addButton = document.createElement('button');
+    const addRow = document.createElement('tr');
+    const addButton = document.createElement('button');
     addButton.innerHTML = '<i class="material-icons">add</i>'
     addButton.addEventListener('click', addNewExpense);
     addRow.appendChild(addButton);
@@ -104,7 +107,7 @@ function addNewExpense() {
     const newType = prompt("What kind of expense is it?");
 
     if (newExpense !== null && newPrice !== null && newType !== null) {
-        spendings.push({
+        expenses.push({
             expense: newExpense, 
             price: newPrice, 
             type: newType, 
@@ -115,19 +118,19 @@ function addNewExpense() {
 }
 
 function removeExpense(index) {
-    spendings.splice(index, 1);
+    expenses.splice(index, 1);
     updateTable();
 }
 
 function editExpense(index) {
-    const newExpense = prompt("Edit the expense:", spendings[index].expense);
-    const newPrice = prompt("Edit the price:", spendings[index].price);
-    const newType = prompt("Edit the type:", spendings[index].type);
+    const newExpense = prompt("Edit the expense:", expenses[index].expense);
+    const newPrice = prompt("Edit the price:", expenses[index].price);
+    const newType = prompt("Edit the type:", expenses[index].type);
 
-    spendings[index].expense = newExpense;
-    spendings[index].price = newPrice;
-    spendings[index].type = newType;
-    spendings[index].dateAdded = currentDate;
+    expenses[index].expense = newExpense;
+    expenses[index].price = newPrice;
+    expenses[index].type = newType;
+    expenses[index].dateAdded = currentDate;
 
     updateTable();
 }
