@@ -22,7 +22,7 @@ const expenses = [
     }
 ];
 
-const  table = document.querySelector('#spendingsTable');
+const table = document.querySelector('#spendingsTable');
 const headerRowtemplate = document.getElementById('headerRowtemplate').content;
 const contentRowtemplate = document.getElementById('expenseRowTemplate').content;
 
@@ -63,7 +63,7 @@ function removeExpense(index) {
 
 function editExpense(index) {
     const row = table.rows[index+1];
-
+    row.classList.add('editing-row');
     row.querySelector('.name').contentEditable = true;
     row.querySelector('.price').contentEditable = true;
     row.querySelector('.type').contentEditable = true;
@@ -80,6 +80,7 @@ function saveExpense(index, row) {
     expenses[index].dateAdded = currentDate;
 
     if (expenses[index].name && expenses[index].price && expenses[index].type) {
+        row.classList.remove('editing-row');
         row.querySelector('.name').contentEditable = false;
         row.querySelector('.price').contentEditable = false;
         row.querySelector('.type').contentEditable = false;
