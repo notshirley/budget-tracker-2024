@@ -1,20 +1,19 @@
-button {
-    border: none;
-    background-color: transparent;
-}
-
 button:hover {
     cursor: pointer;
 }
 
-table, th, td {
-    border-collapse: collapse;
-    border: 1pt black solid;
-    text-align: center;
-    width: auto;
+table {
+    color: inherit; /* Ensure table text color adapts to theme */
 }
 
-.table-button {
-    color: gray;
-    border-left: none !important;
+.btn {
+    background-color: transparent;
+}
+
+.material-icons.light {
+    color: white;
+}
+
+.material-icons.save-icon {
+    color: green;
 }
