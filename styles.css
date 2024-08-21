@@ -2,18 +2,15 @@ button:hover {
     cursor: pointer;
 }
 
-table {
-    color: inherit; 
-}
 
 .btn {
     background-color: transparent;
 }
 
-.material-icons.light {
-    color: white;
+.invalid-input {
+    border: 2px solid red !important; 
 }
 
-.editing-row {
-    background-color: #b59abe;
+input {
+    width: min-content;
 }

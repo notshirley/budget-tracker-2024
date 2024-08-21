@@ -5,42 +5,44 @@
     <title>Budget Tracker</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <template id="headerRowtemplate">
+    <template id="headerRow">
         <tr>
             <th colspan="2">Actions</th>
             <th>Name</th>
             <th>Price</th>
             <th>Type</th>
-            <th>Date Added</th>
+            <th>Date</th>
         </tr>
     </template>
     
-    <template id="expenseRowTemplate">
+    <template id="expenseRow">
         <tr>
             <td><button class="btn delete-button"><i class="material-icons">delete</i></button></td>
             <td><button class="btn edit-button"><i class="material-icons">edit</i></button></td>
-            <td class="name"></td>
-            <td class="price"></td>
-            <td class="type"></td>
-            <td class="date-added"></td>
+            <td id="name"></td>
+            <td id="price"></td>
+            <td id="type"></td>
+            <td id="date"></td>
         </tr>
     </template>
 </head>
-<body>
-    <header>
+<!-- Bootstrap color mode -->
+<body data-bs-theme="light">
+    <div>
         <h1 class="m-2">Spendings</h1>
-        <button id="themeToggle" class="btn btn-secondary m-2">Toggle Dark Mode</button>
-    </header>
-    <table class="table table-bordered table-sm m-2" id="spendingsTable"></table>
+        <!-- Bootstrap color mode -->
+        <button id="color-mode-button" class="btn">
+            <i class="material-icons">brightness_4</i>
+        </button>
+    </div>
+    <table class="table table-bordered table-sm m-2" id="expensesTable"></table>
     <button id="add-button" class="btn btn-secondary m-2 align-items-center d-flex">
-        <i class="material-icons ">add</i> Add New Expense
+        <i class="material-icons m-1">add</i> Add New Expense
     </button>
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
 
