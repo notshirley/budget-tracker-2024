@@ -24,8 +24,7 @@ function init() {
 }
 
 function updateTable() {
-    // TODO: Look into different ways to insert to insert HTML other than innerHTML
-    $('#expensesTable').empty(); // No Jquery
+        jquery - bad, should use pure JS
 
     table.appendChild(headerRow.content.cloneNode(true));
     
@@ -103,7 +102,7 @@ function editExpense(index) {
     const row = table.rows[index+1];
 
     const saveButton = row.querySelector('.edit-button');
-    $(saveButton).replaceWith('<button class="save-button btn"><i class="material-icons">save</i></button>');
+    saveButton.replaceWith(createSaveButton());
 
     const nameCell = row.querySelector('#name');
     const priceCell = row.querySelector('#price');
@@ -135,12 +134,7 @@ function saveExpense(index) {
     }
 
     const editButton = row.querySelector('.save-button');
-    
-    $(editButton).replaceWith('<button class="edit-button btn"><i class="material-icons">edit</i></button>');
-    
-    removeInputBox(nameCell, name);
-    removeInputBox(priceCell, price);
-    removeInputBox(typeCell, type);
+    editButton.replaceWith(createEditButton());  
     
     updateExpenses(index, name, price, type);
     hydrateRow(row, expenses[index].name, expenses[index].price, expenses[index].type, expenses[index].date);
@@ -189,3 +183,24 @@ function attachEventListeners() {
     })
 }
 
+function createEditButton() {
+    const button = document.createElement('button')
+    button.className = "btn edit-button";
+
+    const icon = document.createElement('icon');
+    icon.className = "bi bi-pencil";
+
+    button.appendChild(icon);
+    return button
+}
+
+function createSaveButton() {
+    const button = document.createElement('button')
+    button.className = "btn save-button";
+
+    const icon = document.createElement('icon');
+    icon.className = "bi bi-floppy";
+
+    button.appendChild(icon);
+    return button
+}
