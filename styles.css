@@ -2,15 +2,10 @@ button:hover {
     cursor: pointer;
 }
 
-
 .btn {
     background-color: transparent;
 }
 
 .invalid-input {
     border: 2px solid red !important; 
-}
-
-input {
-    width: min-content;
 }

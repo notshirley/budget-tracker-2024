@@ -1,3 +1,7 @@
+// TODO: Determine why table is extending off page - fixed using container-fluid
+// TODO: Look into Bootstrap validation
+// TODO: Look into why icons lags
+
 // Create module for expense
 import { Expense, currentDate } from './modules/expense.js'
 
@@ -12,7 +16,7 @@ const table = document.querySelector('#expensesTable');
 const headerRow = document.querySelector('#headerRow');
 const expenseRow = document.querySelector('#expenseRow');
 
-init(); //app init
+init();
 
 function init() {
     updateTable();
@@ -20,16 +24,14 @@ function init() {
 }
 
 function updateTable() {
-    // Look into different ways to insert to insert HTML other than innerHTML
-    // table.empty();
-    $('#expensesTable').empty(); //also has other functions to add/remove other HTML
+    // TODO: Look into different ways to insert to insert HTML other than innerHTML
+    $('#expensesTable').empty(); // No Jquery
 
     table.appendChild(headerRow.content.cloneNode(true));
     
-    expenses.forEach((expense, index) => {
+    expenses.forEach((expense,) => {
         const row = expenseRow.content.cloneNode(true);
                 
-        // Separate Hydration method for adding row data
         hydrateRow(row, expense.name, expense.price, expense.type, expense.date);
         
         table.appendChild(row);
@@ -37,6 +39,7 @@ function updateTable() {
 }
 
 function hydrateRow(row, name, price, type, date) {
+    // TODO: Look into attribute selector
     row.querySelector('#name').textContent = name;
     row.querySelector('#price').textContent = price;
     row.querySelector('#type').textContent = type;
@@ -69,7 +72,6 @@ function removeInputBox(cell, data) {
     cell.innerHTML = data;
 }
 
-// Separate click and action
 function onClickAddButton(index) {
     addNewExpense(index);
 }
@@ -97,7 +99,6 @@ function deleteExpense(index) {
     updateTable();
 }
 
-//Replace editableContent with input boxes with error detection
 function editExpense(index) {
     const row = table.rows[index+1];
 
@@ -128,6 +129,7 @@ function saveExpense(index) {
     const priceCell = row.querySelector('#price');
     const typeCell = row.querySelector('#type');
 
+    // Use onChange event listener, explore different events that can be used with inputs
     if (!validateInput(nameInput, name) || !validateInput(priceInput, price) || !validateInput(typeInput, type)) {
         return;
     }
@@ -140,7 +142,6 @@ function saveExpense(index) {
     removeInputBox(priceCell, price);
     removeInputBox(typeCell, type);
     
-    row.querySelector('.save-button')?.removeEventListener('click', () => onClickSaveButton(index));
     updateExpenses(index, name, price, type);
     hydrateRow(row, expenses[index].name, expenses[index].price, expenses[index].type, expenses[index].date);
 }
@@ -155,7 +156,7 @@ function validateInput(input, value) {
     }
 }
 
-// Add all event listeners once
+// Properly remove an event listener somewhere
 function attachEventListeners() {
     document.querySelector('#add-button').addEventListener('click', onClickAddButton);
 
@@ -181,7 +182,6 @@ function attachEventListeners() {
         }
     });
     
-    // Bootstrap color mode
     document.querySelector('#color-mode-button').addEventListener('click', function() {
         const currentTheme = document.body.getAttribute('data-bs-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
