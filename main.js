@@ -1,8 +1,7 @@
-// TODO: Determine why table is extending off page - fixed using container-fluid
+// Determine why table is extending off page - fixed using container-fluid
 // TODO: Look into Bootstrap validation
 // TODO: Look into why icons lags
 
-// Create module for expense
 import { Expense, currentDate } from './modules/expense.js'
 
 const emptyRow = new Expense();
@@ -24,7 +23,13 @@ function init() {
 }
 
 function updateTable() {
+    // Look into different ways to insert to insert HTML other than innerHTML
+    /* Research attempts!
+        innerHTML
         jquery - bad, should use pure JS
+        replaceChildren
+        found insertAdjacentHTML/Element/Text and insertBefore
+    */
 
     table.appendChild(headerRow.content.cloneNode(true));
     
