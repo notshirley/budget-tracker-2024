@@ -30,6 +30,7 @@ function updateTable() {
         replaceChildren
         found insertAdjacentHTML/Element/Text and insertBefore
     */
+    table.replaceChildren();
 
     table.appendChild(headerRow.content.cloneNode(true));
     
