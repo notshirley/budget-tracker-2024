@@ -1,8 +1,17 @@
-button:hover {
-    cursor: pointer;
+/* 
+Specificity, use attribute selector in order to have higher priority; 1-1-0
+No need to use !important 
+*/
+.btn#row-button {
+    background-color: transparent;
+    transition: none;
 }
 
-.btn {
-    background-color: transparent;
-    transition: none !important;
-}
+/*
+Play with media query
+*/
+@media (min-width: 30em) and (max-width: 50em) {
+    * {
+        font-size: 10pt;
+    }
+  }
