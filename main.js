@@ -1,15 +1,13 @@
-// Determine why table is extending off page - fixed using container-fluid
-// TODO: Look into Bootstrap validation
-// TODO: Look into why icons lags
+//TODO: Move removing event listeners to when delete a row
 
 import { Expense, currentDate } from './modules/expense.js'
 
 const emptyRow = new Expense();
 
 const expenses = [
-    new Expense('Groceries', 50, 'food'),
-    new Expense('Gas', 30, 'bill'),
-    new Expense('Dinner', 60, 'food'),
+    new Expense('Groceries', 50, 'food', '2024-07-12'),
+    new Expense('Gas', 30, 'bill', '2024-08-03'),
+    new Expense('Dinner', 60, 'food', '2024-08-05'),
 ];
 const table = document.querySelector('#expensesTable');
 const headerRow = document.querySelector('#headerRow');
@@ -23,13 +21,7 @@ function init() {
 }
 
 function updateTable() {
-    // Look into different ways to insert to insert HTML other than innerHTML
-    /* Research attempts!
-        innerHTML
-        jquery - bad, should use pure JS
-        replaceChildren
-        found insertAdjacentHTML/Element/Text and insertBefore
-    */
+    // TODO: Use more different insert methods to practice
     table.replaceChildren();
 
     table.appendChild(headerRow.content.cloneNode(true));
@@ -45,10 +37,10 @@ function updateTable() {
 
 function hydrateRow(row, name, price, type, date) {
     // TODO: Look into attribute selector
-    row.querySelector('#name').textContent = name;
-    row.querySelector('#price').textContent = price;
-    row.querySelector('#type').textContent = type;
-    row.querySelector('#date').textContent = date;
+    row.querySelector('td[id=name]').textContent = name;
+    row.querySelector('td[id=price]').textContent = price;
+    row.querySelector('td[id=type]').textContent = type;
+    row.querySelector('td[id=date]').textContent = date;
 }
 
 function addEmptyRow() {
@@ -57,24 +49,36 @@ function addEmptyRow() {
     table.appendChild(row)
 }
 
-function updateExpenses(index, name, price, type) {
+function updateExpenses(index, name, price, type, date) {
     expenses[index].name = name;
     expenses[index].price = price;
     expenses[index].type = type;
-    expenses[index].date = currentDate;  
+    expenses[index].date = date;  
+}
+
+function validateInputEvent(inputBox) {
+    if (!inputBox.checkValidity()) {
+        inputBox.classList.add('is-invalid');
+    } else {
+        inputBox.classList.remove('is-invalid');
+    }
 }
 
 function createInputBox(cell, data) {
     const inputBox = document.createElement('input');
-    inputBox.type = 'text';
+    if (cell.getAttribute('id') === 'date') {
+        inputBox.type = 'date';
+    } else {
+        inputBox.type = 'text';
+    }
     inputBox.value = data;
     inputBox.classList.add('form-control');
+    inputBox.required = true;
+
+    inputBox.addEventListener('input', validateInputEvent(inputBox));
+
     cell.innerHTML = '';
     cell.appendChild(inputBox);
-}
-
-function removeInputBox(cell, data) {
-    cell.innerHTML = data;
 }
 
 function onClickAddButton(index) {
@@ -107,56 +111,55 @@ function deleteExpense(index) {
 function editExpense(index) {
     const row = table.rows[index+1];
 
-    const saveButton = row.querySelector('.edit-button');
-    saveButton.replaceWith(createSaveButton());
+    const editButton = row.querySelector('.edit-button');
+    editButton.replaceWith(createSaveButton());
 
-    const nameCell = row.querySelector('#name');
-    const priceCell = row.querySelector('#price');
-    const typeCell = row.querySelector('#type');
+    const nameCell = row.querySelector('td[id=name]');
+    const priceCell = row.querySelector('td[id=name]');
+    const typeCell = row.querySelector('td[id=name]');
+    const dateCell = row.querySelector('td[id=name]');
 
     createInputBox(nameCell, expenses[index].name);
     createInputBox(priceCell, expenses[index].price);
     createInputBox(typeCell, expenses[index].type);
+    createInputBox(dateCell, expenses[index].date);
 }
 
 function saveExpense(index) {
     const row = table.rows[index+1];
 
-    const nameInput = row.querySelector('#name input');
-    const priceInput = row.querySelector('#price input');
-    const typeInput = row.querySelector('#type input');
+    const nameInput = row.querySelector('td[id=name] input');
+    const priceInput = row.querySelector('td[id=name] input');
+    const typeInput = row.querySelector('td[id=name] input');
+    const dateInput = row.querySelector('td[id=name] input');
 
     const name = nameInput.value.trim();
     const price = priceInput.value.trim();
     const type = typeInput.value.trim();
-    
-    const nameCell = row.querySelector('#name');
-    const priceCell = row.querySelector('#price');
-    const typeCell = row.querySelector('#type');
+    const date = dateInput.value.trim();
 
-    // Use onChange event listener, explore different events that can be used with inputs
-    if (!validateInput(nameInput, name) || !validateInput(priceInput, price) || !validateInput(typeInput, type)) {
+    // Use event listener
+    if (!validateInput(nameInput) || !validateInput(priceInput) || !validateInput(typeInput) || !validateInput(dateInput)) {
         return;
     }
 
-    const editButton = row.querySelector('.save-button');
-    editButton.replaceWith(createEditButton());  
+    // Remove event listener somewhere
+    nameInput.removeEventListener('input', validateInputEvent);
+    priceInput.removeEventListener('input', validateInputEvent);
+    typeInput.removeEventListener('input', validateInputEvent);
+    dateInput.removeEventListener('input', validateInputEvent);
+
+    const saveButton = row.querySelector('.save-button');
+    saveButton.replaceWith(createEditButton());  
     
-    updateExpenses(index, name, price, type);
+    updateExpenses(index, name, price, type, date);
     hydrateRow(row, expenses[index].name, expenses[index].price, expenses[index].type, expenses[index].date);
 }
 
-function validateInput(input, value) {
-    if (!value.trim()) {
-        input.classList.add('invalid-input');
-        return false;
-    } else {
-        input.classList.remove('invalid-input');
-        return true;
-    }
+function validateInput(input) {
+    return input.checkValidity();
 }
 
-// Properly remove an event listener somewhere
 function attachEventListeners() {
     document.querySelector('#add-button').addEventListener('click', onClickAddButton);
 

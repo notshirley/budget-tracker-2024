@@ -4,8 +4,5 @@ button:hover {
 
 .btn {
     background-color: transparent;
-}
-
-.invalid-input {
-    border: 2px solid red !important; 
+    transition: none !important;
 }

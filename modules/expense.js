@@ -1,16 +1,13 @@
-export const currentDate = new Date().toLocaleDateString();
+export const currentDate = new Date().toLocaleDateString('en-CA');
 
 class Expense {
-    name = '';
-    price = '';
-    type = '';
-    date = currentDate;
 
-    constructor(newName, newPrice, newType) {
+
+    constructor(newName, newPrice, newType, newDate) {
         this.name = newName || '';
         this.price = newPrice || '';
         this.type = newType || '';
-        this.date = currentDate;
+        this.date = newDate || currentDate;
     }
 
     changeName(newName) {
