@@ -370,3 +370,60 @@ function filterByData() {
 
   updateTable();
 }
+
+// console.time('filterByData');
+// let startTime1 = Date.now(); 
+
+// for (let i = 0; i < 100000; i++) {
+//     filterByData();
+// }
+
+// let endTime1 = Date.now(); 
+
+// let totalTime1 = endTime1 - startTime1; 
+
+// let averageTime1 = totalTime1 / 100000;
+
+// console.log(`Total time for filterByData: ${totalTime1}ms`);
+// console.log(`Average time per run for filterByData: ${averageTime1}ms\n`);
+
+// // -----------------------------
+// console.time('filterTableHtmlTable');
+// let startTime2 = Date.now(); 
+
+// for (let i = 0; i < 100000; i++) {
+//     filterTableHtmlTable();
+// }
+
+// let endTime2 = Date.now(); 
+
+// let totalTime2 = endTime2 - startTime2; 
+
+// let averageTime2 = totalTime2 / 100000;
+
+// console.log(`Total time for filterTableHtmlTable: ${totalTime2}ms`);
+// console.log(`Average time per run for filterTableHtmlTable: ${averageTime2}ms`);
+
+
+
+
+
+
+
+// for (let i = 0; i < 10000; i++) {
+//     filterByData();
+// }
+// console.time('filterByData');
+// for (let i = 0; i < 100000; i++) {
+//     filterByData();
+// }
+// console.timeEnd('filterByData');
+// //----------------
+// for (let i = 0; i < 10000; i++) {
+//     filterTableHtmlTable();
+// }
+// console.time('filterTableHtmlTable');
+// for (let i = 0; i < 100000; i++) {
+//     filterTableHtmlTable();
+// }
+// console.timeEnd('filterTableHtmlTable');
