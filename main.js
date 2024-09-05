@@ -3,15 +3,16 @@
 */
 
 import { Expense } from "./modules/expense.js";
+import Type from "./modules/type.js";
 
 const emptyRow = new Expense();
 
 const expenses = [
-  new Expense("Groceries", 50, "food", "2024-07-12"),
-  new Expense("Gas", 30, "bill", "2024-08-03"),
-  new Expense("Dinner", 60, "food", "2024-08-05"),
-  new Expense("Clothes", 120, "shopping", "2024-07-03"),
-  new Expense("Game", 11.99, "shopping", "2024-10-22"),
+  new Expense("Groceries", 50, Type.getType("food"), "2024-07-12"),
+  new Expense("Gas", 30, Type.getType("bill"), "2024-08-03"),
+  new Expense("Dinner", 60, Type.getType("food"), "2024-08-05"),
+  new Expense("Clothes", 120, Type.getType("shopping"), "2024-07-03"),
+  new Expense("Game", 11.99, Type.getType("shopping"), "2024-10-22"),
 ];
 
 let filteredExpenses = [];
@@ -83,24 +84,27 @@ function validateInputEvent(inputBox) {
 
 function createInputBox(cell, data) {
   const inputBox = document.createElement("input");
-  if (cell.getAttribute("id") === "date") {
+  const cellId = cell.getAttribute("id");
+  inputBox.classList.add("form-control");
+  inputBox.required = true;
+  cell.replaceChildren();
+  
+  if (cellId === "date") {
     inputBox.type = "date";
-  } else if (cell.getAttribute("id") === "price") {
+  } else if (cellId === "price") {
     inputBox.type = "number";
     inputBox.step = "0.01";
+  } else if (cellId === "type") {
+    //TODO
   } else {
     inputBox.type = "text";
   }
   inputBox.value = data;
-  inputBox.classList.add("form-control");
   if (!inputBox.value) inputBox.classList.add("is-invalid");
-  inputBox.required = true;
 
   inputBox.addEventListener("input", function () {
     validateInputEvent(inputBox);
   });
-
-  cell.innerHTML = "";
   cell.appendChild(inputBox);
 }
 
@@ -158,7 +162,7 @@ function saveExpense(index) {
 
   const name = nameInput.value.trim();
   const price = priceInput.value;
-  const type = typeInput.value.trim();
+  const type = typeInput.value;
   const date = dateInput.value;
 
   if (
@@ -333,7 +337,8 @@ function filterByData() {
     input.value.toLowerCase()
   );
 
-  const [nameFilter, priceFilter, typeFilter, startDateFilter, endDateFilter] = filterValues;
+  const [nameFilter, priceFilter, typeFilter, startDateFilter, endDateFilter] =
+    filterValues;
 
   filteredExpenses = [];
 
@@ -371,49 +376,3 @@ function filterByData() {
 
   updateTable();
 }
-
-// console.time('filterByData');
-// let startTime1 = Date.now();
-
-// for (let i = 0; i < 100000; i++) {
-//     filterByData();
-// }
-
-// let endTime1 = Date.now();
-
-// let totalTime1 = endTime1 - startTime1;
-
-// let averageTime1 = totalTime1 / 100000;
-
-// console.log(`Total time for filterByData: ${totalTime1}ms`);
-// console.log(`Average time per run for filterByData: ${averageTime1}ms\n`);
-
-// // -----------------------------
-// console.time('filterTableHtmlTable');
-// let startTime2 = Date.now();
-
-// for (let i = 0; i < 100000; i++) {
-//     filterTableHtmlTable();
-// }
-
-// let endTime2 = Date.now();
-
-// let totalTime2 = endTime2 - startTime2;
-
-// let averageTime2 = totalTime2 / 100000;
-
-// console.log(`Total time for filterTableHtmlTable: ${totalTime2}ms`);
-// console.log(`Average time per run for filterTableHtmlTable: ${averageTime2}ms`);
-
-// console.time('filterByData');
-// for (let i = 0; i < 100000; i++) {
-//     filterByData();
-// }
-// console.timeEnd('filterByData');
-
-//----------------
-// console.time('filterTableHtmlTable');
-// for (let i = 0; i < 100000; i++) {
-//     filterTableHtmlTable();
-// }
-// console.timeEnd('filterTableHtmlTable');
