@@ -1,14 +1,12 @@
-.btn#row-button {
-    background-color: transparent;
-    transition: none ;
+.display-block {
+  display: block !important;
 }
 
-/*
-Play with media query
-- TODO: When reaching phone/small display size, stack filters; use bootstrap
-*/
-@media (min-width: 30em) and (max-width: 50em) {
-    * {
-        font-size: 10pt;
-    }
-  }
+.display-none {
+  display: none !important;
+}
+
+.btn#row-button {
+  background-color: transparent;
+  transition: none;
+}

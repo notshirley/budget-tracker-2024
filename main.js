@@ -1,5 +1,10 @@
 /*
-
+  - Use bootstrap to stack filters at a certain screen size.
+  - Pill types, re-editing current does not work. Tried select, input + datalist... concluded it's easier to make my own.
+    - Validation kinda works, is a bit wonky. Have to keep looking into that
+  - Code-block performance testing.
+    - Tried indexOf and other string operations, my current way still seems to be faster.
+  - Looked into transformation and positioning.
 */
 
 import { Expense } from "./modules/expense.js";
@@ -21,6 +26,7 @@ const table = document.querySelector("#expensesTable");
 const filterInputBoxes = document.querySelector("#filterInputBoxes");
 const headerRow = document.querySelector("#headerRow");
 const expenseRow = document.querySelector("#expenseRow");
+let typeDropdown = document.querySelector("#typeDropdown");
 
 init();
 
@@ -28,14 +34,13 @@ function init() {
   filteredExpenses = expenses;
   updateTable();
 
+  typeDropdown = typeDropdown.content.cloneNode(true);
+
   const tableContainer = document.querySelector(".container-fluid");
   tableContainer.parentNode.insertBefore(
     filterInputBoxes.content.cloneNode(true),
     tableContainer
   );
-
-  // console.log(filterInputBoxes.content.cloneNode(true))
-  // tableContainer.insertAdjacentHTML("beforebegin", filterInputBoxes.content.cloneNode(true).content)
 
   attachEventListeners();
 }
@@ -83,22 +88,31 @@ function validateInputEvent(inputBox) {
 }
 
 function createInputBox(cell, data) {
-  const inputBox = document.createElement("input");
+  let inputBox = document.createElement("input");
   const cellId = cell.getAttribute("id");
+
   inputBox.classList.add("form-control");
   inputBox.required = true;
   cell.replaceChildren();
-  
+
+  if (cellId === "type") {
+    cell.appendChild(typeDropdown);
+    doDropdownThings()
+    inputBox = cell.querySelector("#dropdown-input");
+    inputBox.addEventListener("input", function () {
+      validateInputEvent(inputBox);
+    });
+    if (!inputBox.value) inputBox.classList.add("is-invalid");
+    return
+  }
   if (cellId === "date") {
     inputBox.type = "date";
   } else if (cellId === "price") {
     inputBox.type = "number";
     inputBox.step = "0.01";
-  } else if (cellId === "type") {
-    //TODO
   } else {
-    inputBox.type = "text";
-  }
+      inputBox.type = "text";
+    }
   inputBox.value = data;
   if (!inputBox.value) inputBox.classList.add("is-invalid");
 
@@ -157,12 +171,12 @@ function saveExpense(index) {
 
   const nameInput = row.querySelector("td[id=name] input");
   const priceInput = row.querySelector("td[id=price] input");
-  const typeInput = row.querySelector("td[id=type] input");
+  const typeInput = row.querySelector("td[id=type] input[id=dropdown-input]");
   const dateInput = row.querySelector("td[id=date] input");
 
   const name = nameInput.value.trim();
   const price = priceInput.value;
-  const type = typeInput.value;
+  const type = typeInput.value.replace(/,+$/, '');
   const date = dateInput.value;
 
   if (
@@ -188,6 +202,7 @@ function saveExpense(index) {
 }
 
 function validateInput(input) {
+  console.log(input.checkValidity())
   return input.checkValidity();
 }
 
@@ -376,3 +391,80 @@ function filterByData() {
 
   updateTable();
 }
+
+function doDropdownThings() {
+  const container = document.querySelector('#dropdown-container');
+  const input = document.querySelector('#dropdown-input');
+  input.required = true;
+
+  const selectedOptions = new Set();
+  const types = Type.getTypes();
+  
+  const options = types.map((type) => {
+    let option = document.createElement("span");
+    option.classList.add('badge', 'my-1');
+    option.style = "width: fit-content; background-color: navy; color: white; cursor: pointer;";
+    option.textContent = type;
+    container.appendChild(option);
+    return option;
+  });
+  
+  function filterOptions() {
+    const query = input.value.split(',').pop().trim().toLowerCase(); 
+    options.forEach((option) => {
+      if (option.textContent.toLowerCase().includes(query)) {
+        option.style.display = 'block'; 
+      } else {
+        option.style.display = 'none'; 
+      }
+    });
+  }
+  
+  function handleSpanClick(event) {
+    input.dispatchEvent(new InputEvent('input'))
+    const spanText = event.target.textContent;
+    let currentValue = input.value.trim();
+    
+    if (selectedOptions.has(spanText)) {
+      selectedOptions.delete(spanText);
+      const newValue = currentValue
+      .split(',')
+      .map(value => value.trim())
+      .filter(value => value !== spanText)
+      .join(', ');
+      
+      input.value = newValue.endsWith(',') ? newValue.slice(0, -1) : newValue;
+    } else {
+      input.value = currentValue + ' ' + spanText + ',';
+      selectedOptions.add(spanText);
+    }
+    
+    input.setSelectionRange(input.value.length, input.value.length);
+    input.focus();
+    
+    filterOptions();
+  }
+  
+  input.addEventListener('input', filterOptions);
+  input.addEventListener('focus', showDropdown);
+  input.addEventListener('focusout', hideDropdown);
+  container.addEventListener('mousedown', (event) => {
+    event.preventDefault(); 
+  });
+  
+  options.forEach((option) => {
+    option.addEventListener('click', handleSpanClick);
+  });
+  
+  function showDropdown() {
+    container.classList.remove('display-none');
+    container.classList.add('display-block');
+    filterOptions(); 
+  }
+  
+  function hideDropdown() {
+    hideTimeout = setTimeout(() => {
+      container.classList.remove('display-block');
+      container.classList.add('display-none');
+    }, 300)};
+  }
