@@ -290,6 +290,7 @@ function filterTableHtmlTable() {
   const startDateInput = document.querySelector(".start-date").value;
   const endDateInput = document.querySelector(".end-date").value;
 
+  console.time("filterByHtml");
   for (let i = 1; i < table.rows.length; i++) {
     const row = table.rows[i];
     const cells = Array.from(row.cells).slice(2);
@@ -322,6 +323,7 @@ function filterTableHtmlTable() {
 
     row.style.display = match ? "" : "none";
   }
+  console.timeEnd("filterByHtml");
 }
 
 // Filtering by data set
@@ -331,14 +333,12 @@ function filterByData() {
     input.value.toLowerCase()
   );
 
-  const nameFilter = filterValues[0];
-  const priceFilter = filterValues[1];
-  const typeFilter = filterValues[2];
-  const startDateFilter = filterValues[3];
-  const endDateFilter = filterValues[4];
+  const [nameFilter, priceFilter, typeFilter, startDateFilter, endDateFilter] = filterValues;
 
   filteredExpenses = [];
 
+  // Tracking performance in a code block
+  console.time("filterByData");
   expenses.forEach((expense) => {
     let match = true;
 
@@ -367,20 +367,21 @@ function filterByData() {
       filteredExpenses.push(expense);
     }
   });
+  console.timeEnd("filterByData");
 
   updateTable();
 }
 
 // console.time('filterByData');
-// let startTime1 = Date.now(); 
+// let startTime1 = Date.now();
 
 // for (let i = 0; i < 100000; i++) {
 //     filterByData();
 // }
 
-// let endTime1 = Date.now(); 
+// let endTime1 = Date.now();
 
-// let totalTime1 = endTime1 - startTime1; 
+// let totalTime1 = endTime1 - startTime1;
 
 // let averageTime1 = totalTime1 / 100000;
 
@@ -389,39 +390,28 @@ function filterByData() {
 
 // // -----------------------------
 // console.time('filterTableHtmlTable');
-// let startTime2 = Date.now(); 
+// let startTime2 = Date.now();
 
 // for (let i = 0; i < 100000; i++) {
 //     filterTableHtmlTable();
 // }
 
-// let endTime2 = Date.now(); 
+// let endTime2 = Date.now();
 
-// let totalTime2 = endTime2 - startTime2; 
+// let totalTime2 = endTime2 - startTime2;
 
 // let averageTime2 = totalTime2 / 100000;
 
 // console.log(`Total time for filterTableHtmlTable: ${totalTime2}ms`);
 // console.log(`Average time per run for filterTableHtmlTable: ${averageTime2}ms`);
 
-
-
-
-
-
-
-// for (let i = 0; i < 10000; i++) {
-//     filterByData();
-// }
 // console.time('filterByData');
 // for (let i = 0; i < 100000; i++) {
 //     filterByData();
 // }
 // console.timeEnd('filterByData');
-// //----------------
-// for (let i = 0; i < 10000; i++) {
-//     filterTableHtmlTable();
-// }
+
+//----------------
 // console.time('filterTableHtmlTable');
 // for (let i = 0; i < 100000; i++) {
 //     filterTableHtmlTable();
