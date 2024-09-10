@@ -1,10 +1,4 @@
 /*
-  - Use bootstrap to stack filters at a certain screen size.
-  - Pill types, re-editing current does not work. Tried select, input + datalist... concluded it's easier to make my own.
-    - Validation kinda works, is a bit wonky. Have to keep looking into that
-  - Code-block performance testing.
-    - Tried indexOf and other string operations, my current way still seems to be faster.
-  - Looked into transformation and positioning.
 */
 
 import { Expense } from "./modules/expense.js";
@@ -102,7 +96,6 @@ function createInputBox(cell, data) {
     inputBox.addEventListener("input", function () {
       validateInputEvent(inputBox);
     });
-    if (!inputBox.value) inputBox.classList.add("is-invalid");
     return
   }
   if (cellId === "date") {
@@ -359,9 +352,12 @@ function filterByData() {
 
   // Tracking performance in a code block
   console.time("filterByData");
-  expenses.forEach((expense) => {
+  
+  // Try for loop instead of forEach; backwards is faster?
+  for (let index = 0; index < expenses.length; index++) {
+    const expense = expenses[index];
+    
     let match = true;
-
     if (nameFilter && !expense.name.toLowerCase().includes(nameFilter))
       match = false;
     if (priceFilter && !expense.price.toString().includes(priceFilter))
@@ -386,7 +382,36 @@ function filterByData() {
     if (match) {
       filteredExpenses.push(expense);
     }
-  });
+  }
+
+  // expenses.forEach((expense) => {
+  //   let match = true;
+
+  //   if (nameFilter && !expense.name.toLowerCase().includes(nameFilter))
+  //     match = false;
+  //   if (priceFilter && !expense.price.toString().includes(priceFilter))
+  //     match = false;
+  //   if (typeFilter && !expense.type.toLowerCase().includes(typeFilter))
+  //     match = false;
+
+  //   if (startDateFilter) {
+  //     const expenseDate = new Date(expense.date).toISOString().split("T")[0];
+
+  //     if (endDateFilter) {
+  //       if (!(expenseDate >= startDateFilter && expenseDate <= endDateFilter)) {
+  //         match = false;
+  //       }
+  //     } else {
+  //       if (expenseDate !== startDateFilter) {
+  //         match = false;
+  //       }
+  //     }
+  //   }
+
+  //   if (match) {
+  //     filteredExpenses.push(expense);
+  //   }
+  // });
   console.timeEnd("filterByData");
 
   updateTable();
@@ -418,6 +443,13 @@ function doDropdownThings() {
         option.style.display = 'none'; 
       }
     });
+
+    if (input.value.trim()) {
+      input.classList.remove("is-invalid");
+    } else {
+      input.classList.add("is-invalid");
+    }
+  
   }
   
   function handleSpanClick(event) {
@@ -463,8 +495,7 @@ function doDropdownThings() {
   }
   
   function hideDropdown() {
-    hideTimeout = setTimeout(() => {
-      container.classList.remove('display-block');
-      container.classList.add('display-none');
-    }, 300)};
-  }
+    container.classList.remove('display-block');
+    container.classList.add('display-none');
+  };
+}
