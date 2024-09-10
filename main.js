@@ -1,10 +1,13 @@
-/*
-*/
 
 import { Expense } from "./modules/expense.js";
 import Type from "./modules/type.js";
+import { TypeDropdown } from "./TypeDropdown.js";
+
+// import { db } from './lowdb.js';
+
 
 const emptyRow = new Expense();
+
 
 const expenses = [
   new Expense("Groceries", 50, Type.getType("food"), "2024-07-12"),
@@ -12,7 +15,8 @@ const expenses = [
   new Expense("Dinner", 60, Type.getType("food"), "2024-08-05"),
   new Expense("Clothes", 120, Type.getType("shopping"), "2024-07-03"),
   new Expense("Game", 11.99, Type.getType("shopping"), "2024-10-22"),
-];
+]
+// const expenses = db.data.expenses;
 
 let filteredExpenses = [];
 
@@ -20,16 +24,18 @@ const table = document.querySelector("#expensesTable");
 const filterInputBoxes = document.querySelector("#filterInputBoxes");
 const headerRow = document.querySelector("#headerRow");
 const expenseRow = document.querySelector("#expenseRow");
-let typeDropdown = document.querySelector("#typeDropdown");
+const typeDropdown = new TypeDropdown()
 
 init();
 
 function init() {
+
   filteredExpenses = expenses;
-  updateTable();
+  // console.log(expenses)
 
-  typeDropdown = typeDropdown.content.cloneNode(true);
+  updateTable(filteredExpenses);
 
+  // const typeDropdown = typeDropdown.content.cloneNode(true);
   const tableContainer = document.querySelector(".container-fluid");
   tableContainer.parentNode.insertBefore(
     filterInputBoxes.content.cloneNode(true),
@@ -38,6 +44,7 @@ function init() {
 
   attachEventListeners();
 }
+
 
 function updateTable() {
   table.replaceChildren();
@@ -90,15 +97,13 @@ function createInputBox(cell, data) {
   cell.replaceChildren();
 
   if (cellId === "type") {
-    cell.appendChild(typeDropdown);
-    doDropdownThings()
-    inputBox = cell.querySelector("#dropdown-input");
-    inputBox.addEventListener("input", function () {
-      validateInputEvent(inputBox);
-    });
-    return
-  }
-  if (cellId === "date") {
+      const typeDropdownElement = document.createElement('type-dropdown');
+      cell.appendChild(typeDropdownElement);
+      inputBox = typeDropdownElement.shadowRoot.querySelector("#dropdown-input");
+      inputBox.addEventListener("input", function () {
+        validateInputEvent(inputBox);
+      });
+  } else if (cellId === "date") {
     inputBox.type = "date";
   } else if (cellId === "price") {
     inputBox.type = "number";
@@ -293,52 +298,53 @@ function createSaveButton() {
   return button;
 }
 
-function filterTableHtmlTable() {
-  const filterInputs = document.querySelectorAll("input[id=filter-input]");
-  const filterValues = Array.from(filterInputs).map((input) =>
-    input.value.toLowerCase()
-  );
+// function filterTableHtmlTable() {
+//   const filterInputs = document.querySelectorAll("input[id=filter-input]");
+//   const filterValues = Array.from(filterInputs).map((input) =>
+//     input.value.toLowerCase()
+//   );
 
-  const startDateInput = document.querySelector(".start-date").value;
-  const endDateInput = document.querySelector(".end-date").value;
+//   const startDateInput = document.querySelector(".start-date").value;
+//   const endDateInput = document.querySelector(".end-date").value;
 
-  console.time("filterByHtml");
-  for (let i = 1; i < table.rows.length; i++) {
-    const row = table.rows[i];
-    const cells = Array.from(row.cells).slice(2);
+//   console.time("filterByHtml");
+//   for (let i = 1; i < table.rows.length; i++) {
+//     const row = table.rows[i];
+//     const cells = Array.from(row.cells).slice(2);
 
-    let match = true;
+//     let match = true;
 
-    cells.forEach((cell, index) => {
-      if (startDateInput && cell.getAttribute("id") === "date") {
-        const dateValue = new Date(cell.textContent)
-          .toISOString()
-          .split("T")[0];
+//     cells.forEach((cell, index) => {
+//       if (startDateInput && cell.getAttribute("id") === "date") {
+//         const dateValue = new Date(cell.textContent)
+//           .toISOString()
+//           .split("T")[0];
 
-        if (endDateInput) {
-          if (!(dateValue >= startDateInput && dateValue <= endDateInput)) {
-            match = false;
-          }
-        } else {
-          if (dateValue !== startDateInput) {
-            match = false;
-          }
-        }
-      } else {
-        if (
-          cell.textContent.toLowerCase().indexOf(filterValues[index]) === -1
-        ) {
-          match = false;
-        }
-      }
-    });
+//         if (endDateInput) {
+//           if (!(dateValue >= startDateInput && dateValue <= endDateInput)) {
+//             match = false;
+//           }
+//         } else {
+//           if (dateValue !== startDateInput) {
+//             match = false;
+//           }
+//         }
+//       } else {
+//         if (
+//           cell.textContent.toLowerCase().indexOf(filterValues[index]) === -1
+//         ) {
+//           match = false;
+//         }
+//       }
+//     });
 
-    row.style.display = match ? "" : "none";
-  }
-  console.timeEnd("filterByHtml");
-}
+//     row.style.display = match ? "" : "none";
+//   }
+//   console.timeEnd("filterByHtml");
+// }
 
 // Filtering by data set
+
 function filterByData() {
   const filterInputs = document.querySelectorAll("input[id=filter-input]");
   const filterValues = Array.from(filterInputs).map((input) =>
@@ -353,7 +359,7 @@ function filterByData() {
   // Tracking performance in a code block
   console.time("filterByData");
   
-  // Try for loop instead of forEach; backwards is faster?
+  // backwards is faster?
   for (let index = 0; index < expenses.length; index++) {
     const expense = expenses[index];
     
@@ -383,119 +389,90 @@ function filterByData() {
       filteredExpenses.push(expense);
     }
   }
-
-  // expenses.forEach((expense) => {
-  //   let match = true;
-
-  //   if (nameFilter && !expense.name.toLowerCase().includes(nameFilter))
-  //     match = false;
-  //   if (priceFilter && !expense.price.toString().includes(priceFilter))
-  //     match = false;
-  //   if (typeFilter && !expense.type.toLowerCase().includes(typeFilter))
-  //     match = false;
-
-  //   if (startDateFilter) {
-  //     const expenseDate = new Date(expense.date).toISOString().split("T")[0];
-
-  //     if (endDateFilter) {
-  //       if (!(expenseDate >= startDateFilter && expenseDate <= endDateFilter)) {
-  //         match = false;
-  //       }
-  //     } else {
-  //       if (expenseDate !== startDateFilter) {
-  //         match = false;
-  //       }
-  //     }
-  //   }
-
-  //   if (match) {
-  //     filteredExpenses.push(expense);
-  //   }
-  // });
   console.timeEnd("filterByData");
 
   updateTable();
 }
 
-function doDropdownThings() {
-  const container = document.querySelector('#dropdown-container');
-  const input = document.querySelector('#dropdown-input');
-  input.required = true;
+// function doDropdownThings() {
+//   const container = document.querySelector('#dropdown-container');
+//   const input = document.querySelector('#dropdown-input');
+//   input.required = true;
 
-  const selectedOptions = new Set();
-  const types = Type.getTypes();
+//   const selectedOptions = new Set();
+//   const types = Type.getTypes();
   
-  const options = types.map((type) => {
-    let option = document.createElement("span");
-    option.classList.add('badge', 'my-1');
-    option.style = "width: fit-content; background-color: navy; color: white; cursor: pointer;";
-    option.textContent = type;
-    container.appendChild(option);
-    return option;
-  });
+//   const options = types.map((type) => {
+//     let option = document.createElement("span");
+//     option.classList.add('badge', 'my-1');
+//     option.style = "width: fit-content; background-color: navy; color: white; cursor: pointer;";
+//     option.textContent = type;
+//     container.appendChild(option);
+//     return option;
+//   });
   
-  function filterOptions() {
-    const query = input.value.split(',').pop().trim().toLowerCase(); 
-    options.forEach((option) => {
-      if (option.textContent.toLowerCase().includes(query)) {
-        option.style.display = 'block'; 
-      } else {
-        option.style.display = 'none'; 
-      }
-    });
+//   function filterOptions() {
+//     const query = input.value.split(',').pop().trim().toLowerCase(); 
+//     options.forEach((option) => {
+//       if (option.textContent.toLowerCase().includes(query)) {
+//         option.style.display = 'block'; 
+//       } else {
+//         option.style.display = 'none'; 
+//       }
+//     });
 
-    if (input.value.trim()) {
-      input.classList.remove("is-invalid");
-    } else {
-      input.classList.add("is-invalid");
-    }
+//     if (input.value.trim()) {
+//       input.classList.remove("is-invalid");
+//     } else {
+//       input.classList.add("is-invalid");
+//     }
   
-  }
+//   }
   
-  function handleSpanClick(event) {
-    input.dispatchEvent(new InputEvent('input'))
-    const spanText = event.target.textContent;
-    let currentValue = input.value.trim();
+//   function handleSpanClick(event) {
+//     input.dispatchEvent(new InputEvent('input'))
+//     const spanText = event.target.textContent;
+//     let currentValue = input.value.trim();
     
-    if (selectedOptions.has(spanText)) {
-      selectedOptions.delete(spanText);
-      const newValue = currentValue
-      .split(',')
-      .map(value => value.trim())
-      .filter(value => value !== spanText)
-      .join(', ');
+//     if (selectedOptions.has(spanText)) {
+//       selectedOptions.delete(spanText);
+//       const newValue = currentValue
+//       .split(',')
+//       .map(value => value.trim())
+//       .filter(value => value !== spanText)
+//       .join(', ');
       
-      input.value = newValue.endsWith(',') ? newValue.slice(0, -1) : newValue;
-    } else {
-      input.value = currentValue + ' ' + spanText + ',';
-      selectedOptions.add(spanText);
-    }
+//       input.value = newValue.endsWith(',') ? newValue.slice(0, -1) : newValue;
+//     } else {
+//       input.value = currentValue + ' ' + spanText + ',';
+//       selectedOptions.add(spanText);
+//     }
     
-    input.setSelectionRange(input.value.length, input.value.length);
-    input.focus();
+//     input.setSelectionRange(input.value.length, input.value.length);
+//     input.focus();
     
-    filterOptions();
-  }
+//     filterOptions();
+//   }
   
-  input.addEventListener('input', filterOptions);
-  input.addEventListener('focus', showDropdown);
-  input.addEventListener('focusout', hideDropdown);
-  container.addEventListener('mousedown', (event) => {
-    event.preventDefault(); 
-  });
+//   input.addEventListener('input', filterOptions);
+//   input.addEventListener('focus', showDropdown);
+//   input.addEventListener('focusout', hideDropdown);
+//   container.addEventListener('mousedown', (event) => {
+//     event.preventDefault(); 
+//   });
   
-  options.forEach((option) => {
-    option.addEventListener('click', handleSpanClick);
-  });
+//   options.forEach((option) => {
+//     option.addEventListener('click', handleSpanClick);
+//   });
   
-  function showDropdown() {
-    container.classList.remove('display-none');
-    container.classList.add('display-block');
-    filterOptions(); 
-  }
+//   function showDropdown() {
+//     container.classList.remove('display-none');
+//     container.classList.add('display-block');
+//     filterOptions(); 
+//   }
   
-  function hideDropdown() {
-    container.classList.remove('display-block');
-    container.classList.add('display-none');
-  };
-}
+//   function hideDropdown() {
+//     container.classList.remove('display-block');
+//     container.classList.add('display-none');
+//   };
+// }

@@ -1,0 +1,40 @@
+{
+  "expenses": [
+    {
+      "name": "Groceries",
+      "price": 50,
+      "type": "Food",
+      "date": "2024-07-12"
+    },
+    {
+      "name": "Gas",
+      "price": 30,
+      "type": "Bill",
+      "date": "2024-08-03"
+    },
+    {
+      "name": "Dinner",
+      "price": 60,
+      "type": "Food",
+      "date": "2024-08-05"
+    },
+    {
+      "name": "Clothes",
+      "price": 120,
+      "type": "Shopping",
+      "date": "2024-07-03"
+    },
+    {
+      "name": "Game",
+      "price": 11.99,
+      "type": "Shopping",
+      "date": "2024-10-22"
+    },
+    {
+      "name": "Test",
+      "price": 50,
+      "type": "Miscellaneous",
+      "date": "2024-09-10"
+    }
+  ]
+}
