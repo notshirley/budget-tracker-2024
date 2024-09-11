@@ -1,22 +1,15 @@
-
 import { Expense } from "./modules/expense.js";
-import Type from "./modules/type.js";
-import { TypeDropdown } from "./TypeDropdown.js";
-
-// import { db } from './lowdb.js';
-
+import ExpenseType from "./modules/ExpenseType.js";
 
 const emptyRow = new Expense();
 
-
 const expenses = [
-  new Expense("Groceries", 50, Type.getType("food"), "2024-07-12"),
-  new Expense("Gas", 30, Type.getType("bill"), "2024-08-03"),
-  new Expense("Dinner", 60, Type.getType("food"), "2024-08-05"),
-  new Expense("Clothes", 120, Type.getType("shopping"), "2024-07-03"),
-  new Expense("Game", 11.99, Type.getType("shopping"), "2024-10-22"),
-]
-// const expenses = db.data.expenses;
+  new Expense("Groceries", 50, ExpenseType.getType("food"), "2024-07-12"),
+  new Expense("Gas", 30, ExpenseType.getType("bill"), "2024-08-03"),
+  new Expense("Dinner", 60, ExpenseType.getType("food"), "2024-08-05"),
+  new Expense("Clothes", 120, ExpenseType.getType("shopping"), "2024-07-03"),
+  new Expense("Game", 11.99, ExpenseType.getType("shopping"), "2024-10-22"),
+];
 
 let filteredExpenses = [];
 
@@ -24,18 +17,14 @@ const table = document.querySelector("#expensesTable");
 const filterInputBoxes = document.querySelector("#filterInputBoxes");
 const headerRow = document.querySelector("#headerRow");
 const expenseRow = document.querySelector("#expenseRow");
-const typeDropdown = new TypeDropdown()
 
 init();
 
 function init() {
-
   filteredExpenses = expenses;
-  // console.log(expenses)
 
   updateTable(filteredExpenses);
 
-  // const typeDropdown = typeDropdown.content.cloneNode(true);
   const tableContainer = document.querySelector(".container-fluid");
   tableContainer.parentNode.insertBefore(
     filterInputBoxes.content.cloneNode(true),
@@ -44,7 +33,6 @@ function init() {
 
   attachEventListeners();
 }
-
 
 function updateTable() {
   table.replaceChildren();
@@ -97,20 +85,22 @@ function createInputBox(cell, data) {
   cell.replaceChildren();
 
   if (cellId === "type") {
-      const typeDropdownElement = document.createElement('type-dropdown');
-      cell.appendChild(typeDropdownElement);
-      inputBox = typeDropdownElement.shadowRoot.querySelector("#dropdown-input");
-      inputBox.addEventListener("input", function () {
-        validateInputEvent(inputBox);
-      });
+    const typeDropdownElement = document.createElement("type-dropdown");
+    inputBox = typeDropdownElement.shadowRoot.querySelector("#dropdown-input");
+    inputBox.addEventListener("input", function () {
+      validateInputEvent(inputBox);
+    });
+    inputBox.value = data;
+    cell.appendChild(typeDropdownElement);
+    return;
   } else if (cellId === "date") {
     inputBox.type = "date";
   } else if (cellId === "price") {
     inputBox.type = "number";
     inputBox.step = "0.01";
   } else {
-      inputBox.type = "text";
-    }
+    inputBox.type = "text";
+  }
   inputBox.value = data;
   if (!inputBox.value) inputBox.classList.add("is-invalid");
 
@@ -169,12 +159,15 @@ function saveExpense(index) {
 
   const nameInput = row.querySelector("td[id=name] input");
   const priceInput = row.querySelector("td[id=price] input");
-  const typeInput = row.querySelector("td[id=type] input[id=dropdown-input]");
+  const typeDropdownElement = row.querySelector("type-dropdown");
+  const typeInput = typeDropdownElement.shadowRoot.querySelector(
+    "input[id=dropdown-input]"
+  );
   const dateInput = row.querySelector("td[id=date] input");
 
   const name = nameInput.value.trim();
   const price = priceInput.value;
-  const type = typeInput.value.replace(/,+$/, '');
+  const type = typeInput.value.replace(/,+$/, "");
   const date = dateInput.value;
 
   if (
@@ -200,7 +193,7 @@ function saveExpense(index) {
 }
 
 function validateInput(input) {
-  console.log(input.checkValidity())
+  console.log(input.checkValidity());
   return input.checkValidity();
 }
 
@@ -212,7 +205,6 @@ function attachEventListeners() {
   const filterInputs = document.querySelectorAll("input[id=filter-input]");
   filterInputs.forEach((filter) => {
     filter.addEventListener("input", function () {
-      // filterTableHtmlTable();
       filterByData();
     });
   });
@@ -297,51 +289,52 @@ function createSaveButton() {
   button.appendChild(icon);
   return button;
 }
+/*
+function filterTableHtmlTable() {
+  const filterInputs = document.querySelectorAll("input[id=filter-input]");
+  const filterValues = Array.from(filterInputs).map((input) =>
+    input.value.toLowerCase()
+  );
 
-// function filterTableHtmlTable() {
-//   const filterInputs = document.querySelectorAll("input[id=filter-input]");
-//   const filterValues = Array.from(filterInputs).map((input) =>
-//     input.value.toLowerCase()
-//   );
+  const startDateInput = document.querySelector(".start-date").value;
+  const endDateInput = document.querySelector(".end-date").value;
 
-//   const startDateInput = document.querySelector(".start-date").value;
-//   const endDateInput = document.querySelector(".end-date").value;
+  console.time("filterByHtml");
+  for (let i = 1; i < table.rows.length; i++) {
+    const row = table.rows[i];
+    const cells = Array.from(row.cells).slice(2);
 
-//   console.time("filterByHtml");
-//   for (let i = 1; i < table.rows.length; i++) {
-//     const row = table.rows[i];
-//     const cells = Array.from(row.cells).slice(2);
+    let match = true;
 
-//     let match = true;
+    cells.forEach((cell, index) => {
+      if (startDateInput && cell.getAttribute("id") === "date") {
+        const dateValue = new Date(cell.textContent)
+          .toISOString()
+          .split("T")[0];
 
-//     cells.forEach((cell, index) => {
-//       if (startDateInput && cell.getAttribute("id") === "date") {
-//         const dateValue = new Date(cell.textContent)
-//           .toISOString()
-//           .split("T")[0];
+        if (endDateInput) {
+          if (!(dateValue >= startDateInput && dateValue <= endDateInput)) {
+            match = false;
+          }
+        } else {
+          if (dateValue !== startDateInput) {
+            match = false;
+          }
+        }
+      } else {
+        if (
+          cell.textContent.toLowerCase().indexOf(filterValues[index]) === -1
+        ) {
+          match = false;
+        }
+      }
+    });
 
-//         if (endDateInput) {
-//           if (!(dateValue >= startDateInput && dateValue <= endDateInput)) {
-//             match = false;
-//           }
-//         } else {
-//           if (dateValue !== startDateInput) {
-//             match = false;
-//           }
-//         }
-//       } else {
-//         if (
-//           cell.textContent.toLowerCase().indexOf(filterValues[index]) === -1
-//         ) {
-//           match = false;
-//         }
-//       }
-//     });
-
-//     row.style.display = match ? "" : "none";
-//   }
-//   console.timeEnd("filterByHtml");
-// }
+    row.style.display = match ? "" : "none";
+  }
+  console.timeEnd("filterByHtml");
+}
+*/
 
 // Filtering by data set
 
@@ -358,11 +351,10 @@ function filterByData() {
 
   // Tracking performance in a code block
   console.time("filterByData");
-  
   // backwards is faster?
   for (let index = 0; index < expenses.length; index++) {
     const expense = expenses[index];
-    
+
     let match = true;
     if (nameFilter && !expense.name.toLowerCase().includes(nameFilter))
       match = false;
@@ -393,86 +385,3 @@ function filterByData() {
 
   updateTable();
 }
-
-// function doDropdownThings() {
-//   const container = document.querySelector('#dropdown-container');
-//   const input = document.querySelector('#dropdown-input');
-//   input.required = true;
-
-//   const selectedOptions = new Set();
-//   const types = Type.getTypes();
-  
-//   const options = types.map((type) => {
-//     let option = document.createElement("span");
-//     option.classList.add('badge', 'my-1');
-//     option.style = "width: fit-content; background-color: navy; color: white; cursor: pointer;";
-//     option.textContent = type;
-//     container.appendChild(option);
-//     return option;
-//   });
-  
-//   function filterOptions() {
-//     const query = input.value.split(',').pop().trim().toLowerCase(); 
-//     options.forEach((option) => {
-//       if (option.textContent.toLowerCase().includes(query)) {
-//         option.style.display = 'block'; 
-//       } else {
-//         option.style.display = 'none'; 
-//       }
-//     });
-
-//     if (input.value.trim()) {
-//       input.classList.remove("is-invalid");
-//     } else {
-//       input.classList.add("is-invalid");
-//     }
-  
-//   }
-  
-//   function handleSpanClick(event) {
-//     input.dispatchEvent(new InputEvent('input'))
-//     const spanText = event.target.textContent;
-//     let currentValue = input.value.trim();
-    
-//     if (selectedOptions.has(spanText)) {
-//       selectedOptions.delete(spanText);
-//       const newValue = currentValue
-//       .split(',')
-//       .map(value => value.trim())
-//       .filter(value => value !== spanText)
-//       .join(', ');
-      
-//       input.value = newValue.endsWith(',') ? newValue.slice(0, -1) : newValue;
-//     } else {
-//       input.value = currentValue + ' ' + spanText + ',';
-//       selectedOptions.add(spanText);
-//     }
-    
-//     input.setSelectionRange(input.value.length, input.value.length);
-//     input.focus();
-    
-//     filterOptions();
-//   }
-  
-//   input.addEventListener('input', filterOptions);
-//   input.addEventListener('focus', showDropdown);
-//   input.addEventListener('focusout', hideDropdown);
-//   container.addEventListener('mousedown', (event) => {
-//     event.preventDefault(); 
-//   });
-  
-//   options.forEach((option) => {
-//     option.addEventListener('click', handleSpanClick);
-//   });
-  
-//   function showDropdown() {
-//     container.classList.remove('display-none');
-//     container.classList.add('display-block');
-//     filterOptions(); 
-//   }
-  
-//   function hideDropdown() {
-//     container.classList.remove('display-block');
-//     container.classList.add('display-none');
-//   };
-// }

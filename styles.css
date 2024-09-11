@@ -1,4 +1,10 @@
+@property --transparent-bg {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
 .btn#row-button {
-  background-color: transparent;
+  background-color: var(--transparent-bg);
   transition: none;
 }
