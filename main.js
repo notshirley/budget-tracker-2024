@@ -102,7 +102,7 @@ function createInputBox(cell, data) {
     inputBox.addEventListener("input", function () {
       validateInputEvent(inputBox);
     });
-    inputBox.value = data;
+    inputBox.value = data + ", ";
     cell.appendChild(typeDropdownElement);
     return;
   } else if (cellId === "date") {
@@ -179,7 +179,7 @@ function saveExpense(index) {
 
   const name = nameInput.value.trim();
   const price = priceInput.value;
-  const type = typeInput.value.replace(/,+$/, "");
+  const type = typeInput.value.trim().replace(/,+$/, "");
   const date = dateInput.value;
 
   if (

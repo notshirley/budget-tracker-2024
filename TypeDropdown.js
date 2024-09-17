@@ -93,23 +93,26 @@ export class TypeDropdown extends HTMLElement {
   handleSpanClick = (event) => {
     this.input.dispatchEvent(new InputEvent("input"));
     const spanText = event.target.textContent;
-    let currentValue = this.input.value
     const inputs = this.input.value.split(", ");
     let lastInput = inputs[inputs.length-1]
+    let newValue = ""
 
     if (this.selectedOptions.has(spanText)) {
       this.selectedOptions.delete(spanText);
-      const newValue = currentValue.split(",").map((value) => value.trim()).filter((value) => value !== spanText).join(", ");
+      newValue = this.input.value.split(",").map((value) => value.trim()).filter((value) => value !== spanText).join(", ");
       this.input.value = newValue;
     } else {
+      newValue = this.input.value + spanText + ", ";
+      this.selectedOptions.add(spanText);
       if (!this.options.includes(lastInput)) {
-        this.selectedOptions.add(spanText);
-        this.input.value = this.input.value.replace(lastInput, spanText + ", ")
-      } else {
-        this.input.value = currentValue + spanText + ", ";
-        this.selectedOptions.add(spanText);
+        newValue = spanText + ", " + this.input.value.replace(lastInput, "")
+        this.handleSpanClick(event)
       }
     }
+    
+    
+    this.input.value = newValue;
+
     this.input.setSelectionRange(this.input.value.length, this.input.value.length);
     this.input.focus();
   }
