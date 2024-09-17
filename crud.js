@@ -22,7 +22,7 @@ const getExpenses = async () => {
 try {
     const response = await fetch(`http://localhost:3000/expenses/all`);
     const post = await response.json();
-    console.log(post);
+    // console.log(post);
     return post;
 } catch (error) {
     console.error('Error fetching post:', error);
@@ -72,7 +72,7 @@ const editExpense = async (postData) => {
 };
 
 
-getExpenses()
+// getExpenses()
 // const expenseToAdd = new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12");
 // createExpense(expenseToAdd)
 // const expenseToDelete = new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12");
@@ -84,3 +84,5 @@ getExpenses()
 // };
 
 // editExpense(expenseToEdit);
+
+export {getExpenses, createExpense, deleteExpense, editExpense}

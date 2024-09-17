@@ -1,15 +1,18 @@
 import { Expense } from "./modules/expense.js";
 import ExpenseType from "./modules/expenseType.js";
+import * as crud from "./crud.js"
 
 const emptyRow = new Expense();
 
-const expenses = [
-  new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12"),
-  new Expense("Gas", 30, 'Bill', "2024-08-03"),
-  new Expense("Dinner", 60, 'Food', "2024-08-05"),
-  new Expense("Clothes", 120, 'Shopping', "2024-07-03"),
-  new Expense("Game", 11.99, 'Shopping', "2024-10-22"),
-];
+// const expenses = [
+//   new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12"),
+//   new Expense("Gas", 30, 'Bill', "2024-08-03"),
+//   new Expense("Dinner", 60, 'Food', "2024-08-05"),
+//   new Expense("Clothes", 120, 'Shopping', "2024-07-03"),
+//   new Expense("Game", 11.99, 'Shopping', "2024-10-22"),
+// ];
+
+const expenses = await crud.getExpenses()
 
 let filteredExpenses = [];
 
@@ -62,10 +65,14 @@ function addEmptyRow() {
 }
 
 function updateExpenses(index, name, price, type, date) {
-  expenses[index].name = name;
-  expenses[index].price = price;
-  expenses[index].type = type;
-  expenses[index].date = date;
+  crud.editExpense({
+    oldExpense: expenses[index],
+    newExpense: new Expense(name, price, type, date),
+  })
+  // expenses[index].name = name;
+  // expenses[index].price = price;
+  // expenses[index].type = type;
+  // expenses[index].date = date;
 }
 
 function validateInputEvent(inputBox) {
@@ -79,13 +86,14 @@ function validateInputEvent(inputBox) {
     } else {
       inputBox.classList.remove("is-invalid");
     }
+  } 
+
+  if (!inputBox.checkValidity()) {
+    inputBox.classList.add("is-invalid");
   } else {
-    if (!inputBox.checkValidity()) {
-      inputBox.classList.add("is-invalid");
-    } else {
-      inputBox.classList.remove("is-invalid");
-    }
+    inputBox.classList.remove("is-invalid");
   }
+  
 }
 
 function createInputBox(cell, data) {
@@ -136,7 +144,7 @@ function onClickSaveButton(index) {
 }
 
 function addNewExpense() {
-  expenses.push({ ...emptyRow });
+  crud.createExpense(emptyRow);
   addEmptyRow();
   editExpense(expenses.length - 1);
 }
@@ -145,7 +153,7 @@ function deleteExpense(index) {
   const row = table.rows[index + 1];
   removeRowEventListeners(row);
 
-  expenses.splice(index, 1);
+  crud.deleteExpense(expenses[index]);
   updateTable();
 }
 
@@ -237,6 +245,7 @@ function handleTableClick(event) {
   }
   if (target.closest(".save-button")) {
     handleSaveButtonClick(event);
+    
   }
 }
 

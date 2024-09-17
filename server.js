@@ -1,11 +1,13 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
+import cors from 'cors';
 
 import { JSONFilePreset } from 'lowdb/node';
 
 import { Expense } from "./modules/expense.js";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const defaultData = { expenses: [
