@@ -1,8 +1,8 @@
-import ExpenseType from "./modules/ExpenseType.js";
+import ExpenseType from "./modules/expenseType.js";
 
 export class TypeDropdown extends HTMLElement {
   selectedOptions = new Set();
-  types = ExpenseType.getTypes();
+  types = ExpenseType.getAllTypes();
   container = null;
   input = null;
   options = [];
@@ -19,7 +19,7 @@ export class TypeDropdown extends HTMLElement {
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
       <link rel="stylesheet" href="styles.css">
       <style>
-        .display-block {
+      .display-block {
         display: block !important;
       }
 
@@ -53,8 +53,14 @@ export class TypeDropdown extends HTMLElement {
       return option;
     });
 
-    this.input.addEventListener("input", this.filterOptions);
-    this.input.addEventListener("focus", this.showDropdown);
+    this.input.addEventListener("input", () => {
+      this.filterOptions();
+      this.onFocusAndInput()
+    });
+    this.input.addEventListener("focus", () => {
+      this.showDropdown();
+      this.onFocusAndInput();
+    });
     this.input.addEventListener("focusout", this.hideDropdown);
     this.container.addEventListener("mousedown", (event) => {
       event.preventDefault();
@@ -87,27 +93,20 @@ export class TypeDropdown extends HTMLElement {
   handleSpanClick = (event) => {
     this.input.dispatchEvent(new InputEvent("input"));
     const spanText = event.target.textContent;
-    let currentValue = this.input.value.trim()
+    let currentValue = this.input.value
+    const inputs = this.input.value.split(", ");
+    let lastInput = inputs[inputs.length-1]
 
     if (this.selectedOptions.has(spanText)) {
       this.selectedOptions.delete(spanText);
       const newValue = currentValue.split(",").map((value) => value.trim()).filter((value) => value !== spanText).join(", ");
-    
       this.input.value = newValue;
     } else {
-      const optionsArray = currentValue
-        ? currentValue.split(",").map((value) => value.trim()).filter(Boolean)
-        : [];
-    
-      optionsArray.forEach((value) => {
-        if (this.types.includes(value)) {
-          this.selectedOptions.add(value);
-        }
-      });
-    
-      if (!this.selectedOptions.has(spanText)) {
-        this.input.value = `${currentValue ? currentValue + " " : 
-        ""}${spanText},`;
+      if (!this.options.includes(lastInput)) {
+        this.selectedOptions.add(spanText);
+        this.input.value = this.input.value.replace(lastInput, spanText + ", ")
+      } else {
+        this.input.value = currentValue + spanText + ", ";
         this.selectedOptions.add(spanText);
       }
     }
@@ -118,12 +117,21 @@ export class TypeDropdown extends HTMLElement {
   showDropdown = () => {
     this.container.classList.remove("display-none");
     this.container.classList.add("display-block");
+
     this.filterOptions();
   }
 
   hideDropdown = () => {
     this.container.classList.remove("display-block");
     this.container.classList.add("display-none");
+  }
+
+  onFocusAndInput = () => {
+    const checkInputArray = this.input.value.split(",");
+    checkInputArray.forEach((item) => {
+      item = item.replace(" ", "");
+      if (item) this.selectedOptions.add(item);
+    });
   }
 
 }

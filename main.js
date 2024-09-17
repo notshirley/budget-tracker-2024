@@ -1,14 +1,14 @@
 import { Expense } from "./modules/expense.js";
-import ExpenseType from "./modules/ExpenseType.js";
+import ExpenseType from "./modules/expenseType.js";
 
 const emptyRow = new Expense();
 
 const expenses = [
-  new Expense("Groceries", 50, ExpenseType.getType("food"), "2024-07-12"),
-  new Expense("Gas", 30, ExpenseType.getType("bill"), "2024-08-03"),
-  new Expense("Dinner", 60, ExpenseType.getType("food"), "2024-08-05"),
-  new Expense("Clothes", 120, ExpenseType.getType("shopping"), "2024-07-03"),
-  new Expense("Game", 11.99, ExpenseType.getType("shopping"), "2024-10-22"),
+  new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12"),
+  new Expense("Gas", 30, 'Bill', "2024-08-03"),
+  new Expense("Dinner", 60, 'Food', "2024-08-05"),
+  new Expense("Clothes", 120, 'Shopping', "2024-07-03"),
+  new Expense("Game", 11.99, 'Shopping', "2024-10-22"),
 ];
 
 let filteredExpenses = [];
@@ -69,10 +69,22 @@ function updateExpenses(index, name, price, type, date) {
 }
 
 function validateInputEvent(inputBox) {
-  if (!inputBox.checkValidity()) {
-    inputBox.classList.add("is-invalid");
+  if (inputBox.getAttribute("id") === "dropdown-input") {
+    const validTypes = ExpenseType.getAllTypes();
+    const values = inputBox.value.split(", ").map(v => v.trim());
+    const isValid = values.every(value => validTypes.includes(value));
+
+    if (!isValid) {
+      inputBox.classList.add("is-invalid");
+    } else {
+      inputBox.classList.remove("is-invalid");
+    }
   } else {
-    inputBox.classList.remove("is-invalid");
+    if (!inputBox.checkValidity()) {
+      inputBox.classList.add("is-invalid");
+    } else {
+      inputBox.classList.remove("is-invalid");
+    }
   }
 }
 
@@ -171,10 +183,10 @@ function saveExpense(index) {
   const date = dateInput.value;
 
   if (
-    !validateInput(nameInput) ||
-    !validateInput(priceInput) ||
-    !validateInput(typeInput) ||
-    !validateInput(dateInput)
+    inputIsValid(nameInput) ||
+    inputIsValid(priceInput) ||
+    inputIsValid(typeInput) ||
+   	inputIsValid(dateInput)
   ) {
     return;
   }
@@ -192,9 +204,8 @@ function saveExpense(index) {
   );
 }
 
-function validateInput(input) {
-  console.log(input.checkValidity());
-  return input.checkValidity();
+function inputIsValid(input) {
+  return input.classList.contains("is-invalid");
 }
 
 function attachEventListeners() {

@@ -1,5 +1,4 @@
 const ExpenseType = (() => {
-    
     const defaultPossibilities = new Set([
         'Food', 
         'Subscription', 
@@ -11,30 +10,29 @@ const ExpenseType = (() => {
         'Miscellaneous'
     ]);
     
-    
     const getTypes = () => Array.from(defaultPossibilities);
 
     const getType = (selectedType) => {
       return getTypes().find(type => type.toLowerCase() === selectedType.toLowerCase())
     }
         
-    const addPossibleType = (newType) => {
+    const addType = (newType) => {
       if (typeof newType === 'string' && !defaultPossibilities.has(newType)) {
         defaultPossibilities.add(newType);
       }
     };
   
-    const removePossibleType = (typeToRemove) => {
+    const removeType = (typeToRemove) => {
       if (defaultPossibilities.has(typeToRemove)) {
         defaultPossibilities.delete(typeToRemove);
       }
     };
   
     return {
-      getTypes,
+      getAllTypes: getTypes,
       getType,
-      addType: addPossibleType,
-      removeType: removePossibleType
+      addPossibleType: addType,
+      removePossibleType: removeType
     };
   })();
   
