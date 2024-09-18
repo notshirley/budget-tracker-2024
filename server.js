@@ -1,35 +1,36 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import cors from 'cors';
-
 import { JSONFilePreset } from 'lowdb/node';
-
 import { Expense } from "./modules/expense.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const defaultData = { expenses: [
-  new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12"),
-  new Expense("Gas", 30, 'Bill', "2024-08-03"),
-  new Expense("Dinner", 60, 'Food', "2024-08-05"),
-  new Expense("Clothes", 120, 'Shopping', "2024-07-03"),
-  new Expense("Game", 11.99, 'Shopping', "2024-10-22"),
-] };
+const defaultData = { 
+  expenses: [
+    new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12"),
+    new Expense("Gas", 30, 'Bill', "2024-08-03"),
+    new Expense("Dinner", 60, 'Food', "2024-08-05"),
+    new Expense("Clothes", 120, 'Shopping', "2024-07-03"),
+    new Expense("Game", 11.99, 'Shopping', "2024-10-22"),
+  ] 
+};
 
-// Be more consistent! Convert to function.
-(async () => {
-  const db = await JSONFilePreset('db.json', defaultData);
+await initiateServer();
+
+async function initiateServer() {
+const db = await JSONFilePreset('db.json', defaultData);
 
   const { expenses } = db.data;
 
-  app.get('/expenses/all', (req, res) => {
+  app.get('/expenses', (req, res) => {
     res.send(expenses);
   });
 
   app.post(
-    '/addExpense',
+    '/expenses',
     asyncHandler(async (req, res) => {
       const post = req.body;
       await db.update(({ expenses }) => expenses.push(post));
@@ -38,7 +39,7 @@ const defaultData = { expenses: [
   );
 
   app.delete(
-    '/deleteExpense',
+    '/expenses',
     asyncHandler(async (req, res) => {
       const { name, price, type, date } = req.body;
   
@@ -61,7 +62,7 @@ const defaultData = { expenses: [
   );
 
   app.put(
-    '/editExpense',
+    '/expenses',
     asyncHandler(async (req, res) => {
       const { oldExpense, newExpense } = req.body;
   
@@ -92,4 +93,4 @@ const defaultData = { expenses: [
   app.listen(3000, () => {
     console.log('listening on port 3000');
   });
-})();
+}
