@@ -1,6 +1,6 @@
 import ExpenseType from "./modules/expenseType.js";
 
-export class TypeDropdown extends HTMLElement {
+class TypeDropdown extends HTMLElement {
   selectedOptions = new Set();
   types = ExpenseType.getAllTypes();
   container = null;

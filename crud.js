@@ -1,3 +1,4 @@
+// convert to class
 import { Expense } from "./modules/expense.js";
 
 const createExpense = async (postData) => {
@@ -22,7 +23,6 @@ const getExpenses = async () => {
 try {
     const response = await fetch(`http://localhost:3000/expenses/all`);
     const post = await response.json();
-    // console.log(post);
     return post;
 } catch (error) {
     console.error('Error fetching post:', error);

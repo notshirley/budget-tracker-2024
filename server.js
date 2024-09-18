@@ -18,6 +18,7 @@ const defaultData = { expenses: [
   new Expense("Game", 11.99, 'Shopping', "2024-10-22"),
 ] };
 
+// Be more consistent! Convert to function.
 (async () => {
   const db = await JSONFilePreset('db.json', defaultData);
 

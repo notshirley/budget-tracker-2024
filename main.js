@@ -4,14 +4,6 @@ import * as crud from "./crud.js"
 
 const emptyRow = new Expense();
 
-// const expenses = [
-//   new Expense("Groceries", 50, 'Food, Bill, Subscription', "2024-07-12"),
-//   new Expense("Gas", 30, 'Bill', "2024-08-03"),
-//   new Expense("Dinner", 60, 'Food', "2024-08-05"),
-//   new Expense("Clothes", 120, 'Shopping', "2024-07-03"),
-//   new Expense("Game", 11.99, 'Shopping', "2024-10-22"),
-// ];
-
 const expenses = await crud.getExpenses()
 
 let filteredExpenses = [];
@@ -69,10 +61,6 @@ function updateExpenses(index, name, price, type, date) {
     oldExpense: expenses[index],
     newExpense: new Expense(name, price, type, date),
   })
-  // expenses[index].name = name;
-  // expenses[index].price = price;
-  // expenses[index].type = type;
-  // expenses[index].date = date;
 }
 
 function validateInputEvent(inputBox) {

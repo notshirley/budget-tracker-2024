@@ -1,3 +1,5 @@
+// convert to class
+
 const ExpenseType = (() => {
     const defaultPossibilities = new Set([
         'Food', 

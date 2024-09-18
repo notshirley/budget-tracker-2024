@@ -1,5 +1,6 @@
 export const currentDate = new Date().toLocaleDateString('en-CA');
 
+
 class Expense {
     name = '';
     price = 0;
@@ -7,10 +8,10 @@ class Expense {
     date = currentDate;
 
     constructor(newName, newPrice, newType, newDate) {
-        this.name = newName || '';
-        this.price = newPrice || 0;
-        this.type = newType || '';
-        this.date = newDate || currentDate;
+        this.name = newName
+        this.price = newPrice
+        this.type = newType
+        this.date = newDate
     }
 
 
