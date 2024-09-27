@@ -1,4 +1,5 @@
 import { RouteService } from '../services/routeService.js';
+import { Expense } from '../modules/expense.js'
 
 const route = new RouteService();
 
@@ -23,8 +24,16 @@ class ExpenseService {
         body: JSON.stringify(postData),
       });
       
-      const newExpense = await response.json();
+      const newExpenseData  = await response.json();
+      const newExpense = new Expense(
+        newExpenseData.name,
+        newExpenseData.price,
+        newExpenseData.type,
+        newExpenseData.date
+      );
+      
       return newExpense;
+  
     } catch (error) {
       console.error('Error creating post:', error);
     }

@@ -1,45 +1,55 @@
-// Live reload seems to be the problem, as everytime db.json gets updated, the page reloads.
+// Create a selector object so it's less repetitive (for like column ids)
 
 import { Expense } from "./modules/expense.js";
-import { ExpenseType } from "./modules/expenseType.js";
 import { ExpenseService } from "./services/expenseService.js";
+import { ExpenseType } from "./modules/expenseType.js";
 
 const expenseService = new ExpenseService();
 const expenseType = new ExpenseType();
-
 const emptyRow = new Expense();
-
-const expenses = await expenseService.getExpenses()
-const filteredExpenses = [];
+let expenses = []
+let filteredExpenses = [];
 
 const table = document.querySelector("#expensesTable");
 const filterInputBoxes = document.querySelector("#filterInputBoxes");
 const headerRow = document.querySelector("#headerRow");
 const expenseRow = document.querySelector("#expenseRow");
 
-init();
+// init();
 
-function init() {
-  filteredExpenses.push(...expenses);
-  updateTable(filteredExpenses);
-
-  // Create container for filter input boxes
-  const tableContainer = document.querySelector(".container-fluid");
-  tableContainer.parentNode.insertBefore(
-    filterInputBoxes.content.cloneNode(true),
-    tableContainer
-  );
-
-  attachEventListeners();
+function getExpenses() {
+  return expenseService.getExpenses()
 }
+
+async function updateExpenses() {
+  expenses = await getExpenses()
+  filteredExpenses = await getExpenses()
+}
+
+async function init() {
+    await updateExpenses()
+    updateTable();
+
+    // Creates container for filter input boxes
+    const tableContainer = document.querySelector(".container-fluid");
+    tableContainer.parentNode.insertBefore(
+      filterInputBoxes.content.cloneNode(true),
+      tableContainer
+    );
+
+    addEventListeners();
+}
+
 
 function updateTable() {
   table.replaceChildren();
   table.appendChild(headerRow.content.cloneNode(true));
 
   filteredExpenses.forEach((expense) => {
+    const {name, price, type, date} = expense
+    
     const row = expenseRow.content.cloneNode(true);
-    hydrateRow(row, expense.name, expense.price, expense.type, expense.date);
+    hydrateRow(row, name, price, type, date);
     table.appendChild(row);
   });
 }
@@ -52,10 +62,10 @@ function hydrateRow(row, name, price, type, date) {
 }
 
 function validateInputEvent(inputBox) {
+  // Makes sure dropdown inputs are valid expense types.
   if (inputBox.getAttribute("id") === "dropdown-input") {
-    const validTypes = expenseType.getTypes();
     const values = inputBox.value.split(", ").map(v => v.trim());
-    const isValid = values.every(value => validTypes.includes(value));
+    const isValid = values.every(value => expenseType.getTypes().includes(value));
 
     if (!isValid) {
       inputBox.classList.add("is-invalid");
@@ -76,9 +86,9 @@ function toggleColorMode() {
   const newTheme = currentTheme === "dark" ? "light" : "dark";
   document.body.setAttribute("data-bs-theme", newTheme);
 }
-function attachEventListeners() {
+function addEventListeners() {
   document.querySelector("#add-button").addEventListener("click", onClickAddButton);
-  const filterInputs = document.querySelectorAll("input[id=filter-input]");
+  const filterInputs = document.querySelectorAll("#filter-input");
   filterInputs.forEach((filter) => {
     filter.addEventListener("input", function () {
       filterByData();
@@ -88,71 +98,34 @@ function attachEventListeners() {
   document.querySelector("#color-mode-button").addEventListener("click", toggleColorMode);
 }
 
-function removeRowEventListeners(row) {
-  const deleteButton = row.querySelector(".delete-button");
-  const editButton = row.querySelector(".edit-button");
-  const saveButton = row.querySelector(".save-button");
-
-  if (deleteButton)
-    deleteButton.removeEventListener("click", onClickDeleteButton);
-  if (editButton)
-    editButton.removeEventListener("click", onClickEditButton);
-  if (saveButton)
-    saveButton.removeEventListener("click", onClickSaveButton);
-}
-
+// Use single table handler
 function handleTableClick(event) {
   const target = event.target;
-  if (target.closest(".delete-button")) {
-    onClickDeleteButton(event);
-  }
-  if (target.closest(".edit-button")) {
-    onClickEditButton(event);
-  }
-  if (target.closest(".save-button")) {
-    onClickSaveButton(event);
-  }
-}
-
-function onClickDeleteButton(event) {
   const row = event.target.closest("tr");
   const index = row.rowIndex - 1;
-  deleteExpense(index);
-}
-
-function onClickEditButton(event) {
-  const row = event.target.closest("tr");
-  const index = row.rowIndex - 1;
-  editExpense(index);
-}
-
-function onClickSaveButton(event) {
-  const row = event.target.closest("tr");
-  const index = row.rowIndex - 1;
-  saveExpense(index);}
-
-function onClickAddButton(index) {
-  addNewExpense(index);
-}
-
-function addNewExpense() {
-  expenseService.createExpense(emptyRow);
   
-  const row = expenseRow.content.cloneNode(true);
-  hydrateRow(row, emptyRow);
-  table.appendChild(row);
-
-  editExpense(expenses.length-1);
+  if (target.closest(".delete-button")) {
+    deleteExpense(index);
+  } else if (target.closest(".edit-button")) {
+    editExpense(index);
+  } else if (target.closest(".save-button")) {
+    saveExpense(index);
+  }
 }
 
-function deleteExpense(index) {
-  const row = table.rows[index + 1];
-  removeRowEventListeners(row);
+async function onClickAddButton() {
+  expenseService.createExpense(emptyRow);
+  await updateExpenses()
+  updateTable()
+  
+  editExpense(table.rows.length-2);
+}
 
-  expenseService.deleteExpense(index);
+async function deleteExpense(index) {
+  expenseService.deleteExpense(expenses[index]);
+  await updateExpenses()
   updateTable();
 }
-
 
 function createSaveButton() {
   const button = document.createElement("button");
@@ -165,6 +138,7 @@ function createSaveButton() {
   button.appendChild(icon);
   return button;
 }
+
 function createInputBox(cell, data) {
   const cellId = cell.getAttribute("id");
   cell.replaceChildren();
@@ -201,9 +175,9 @@ function createInputBox(cell, data) {
   }
   inputBox.addEventListener("input", () => validateInputEvent(inputBox));
 }
-function editExpense(index) {
+async function editExpense(index) {
   const row = table.rows[index+1];
-
+  
   const editButton = row.querySelector(".edit-button");
   editButton.replaceWith(createSaveButton());
 
@@ -212,13 +186,13 @@ function editExpense(index) {
   const typeCell = row.querySelector("#type");
   const dateCell = row.querySelector("#date");
 
-
-  createInputBox(nameCell, expenses[index].name);
-  createInputBox(priceCell, expenses[index].price);
-  createInputBox(typeCell, expenses[index].type);
-  createInputBox(dateCell, expenses[index].date);
+  const {name, price, type, date} = expenses[index] ? expenses[index] : emptyRow;
+  
+  createInputBox(nameCell, name);
+  createInputBox(priceCell, price);
+  createInputBox(typeCell, type);
+  createInputBox(dateCell, date);
 }
-
 
 function createEditButton() {
   const button = document.createElement("button");
@@ -234,7 +208,7 @@ function createEditButton() {
 function inputIsInvalid(input) {
   return input.classList.contains("is-invalid");
 }
-function saveExpense(index) {
+async function saveExpense(index) {
   const row = table.rows[index + 1];
 
   const nameInput = row.querySelector("td[id=name] input");
@@ -256,32 +230,39 @@ function saveExpense(index) {
   saveButton.replaceWith(createEditButton());
 
   expenseService.editExpense({
-    oldExpense: expenses[index],
+    oldExpense: expenses.length == index ? expenses[index-1] : expenses[index],
     newExpense: new Expense(name, price, type, date),
   })
+  
+  await updateExpenses()
+
+
+  // clean up
   hydrateRow(row, expenses[index].name, expenses[index].price, expenses[index].type, expenses[index].date
   );
 }
 
-function filterByData() {
+export function filterByData() {
   const filterInputs = document.querySelectorAll("#filter-input");
   const filterValues = Array.from(filterInputs).map((input) => input.value.toLowerCase());
 
   const [nameFilter, priceFilter, typeFilter, startDateFilter, endDateFilter] = filterValues;
 
-  filteredExpenses.length = 0
 
+  filteredExpenses.length = 0
+  
   expenses.forEach((expense) => {
+    const {name, price, type, date} = expense;
     let match = true;
-    if (nameFilter && !expense.name.toLowerCase().includes(nameFilter)) match = false;
-    if (priceFilter && !expense.price.toString().includes(priceFilter)) match = false;
-    if (typeFilter && !expense.type.toLowerCase().includes(typeFilter)) match = false;
+    if (nameFilter && !name.toLowerCase().includes(nameFilter)) match = false;
+    if (priceFilter && !price.toString().includes(priceFilter)) match = false;
+    if (typeFilter && !type.toLowerCase().includes(typeFilter)) match = false;
 
     if (startDateFilter) {
-      const date = new Date(expense.date).toISOString().split("T")[0];
+      const formattedDate = new Date(date).toISOString().split("T")[0];
 
       if (endDateFilter) {
-        if (!(date >= startDateFilter && date <= endDateFilter)) {
+        if (!(formattedDate >= startDateFilter && formattedDate <= endDateFilter)) {
           match = false;
         }
       } else {
@@ -298,3 +279,7 @@ function filterByData() {
 
   updateTable();
 }
+
+export const main = {
+  filterByData,
+};

@@ -65,23 +65,24 @@ const db = await JSONFilePreset('db.json', defaultData);
     '/expenses',
     asyncHandler(async (req, res) => {
       const { oldExpense, newExpense } = req.body;
-  
-      const index = expenses.findIndex(
-        (expense) =>
-          expense.name === oldExpense.name &&
-          expense.price === oldExpense.price &&
-          expense.type === oldExpense.type &&
-          expense.date === oldExpense.date
+
+      const index = expenses.findIndex((expense) =>
+        expense.name === oldExpense.name &&
+        expense.price === oldExpense.price &&
+        expense.type === oldExpense.type &&
+        expense.date === oldExpense.date
+      )
+
+      
+      if (index !== -1) {
+        expenses[index] = new Expense(
+          newExpense.name,
+          newExpense.price,
+          newExpense.type,
+          newExpense.date
         );
-  
-        if (index !== -1) {
-          expenses[index] = new Expense(
-            newExpense.name,
-            newExpense.price,
-            newExpense.type,
-            newExpense.date
-          );
         await db.update(({ expenses }) => expenses);
+        console.log(expenses[index])
         res.send(expenses[index]);
       } else {
         res.status(404).send({ message: 'Expense not found' });
