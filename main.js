@@ -15,7 +15,7 @@ const filterInputBoxes = document.querySelector("#filterInputBoxes");
 const headerRow = document.querySelector("#headerRow");
 const expenseRow = document.querySelector("#expenseRow");
 
-// init();
+init();
 
 function getExpenses() {
   return expenseService.getExpenses()
