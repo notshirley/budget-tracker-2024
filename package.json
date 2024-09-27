@@ -2,13 +2,14 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "build": "babel ./ --out-dir dist"
   },
   "jest": {
     "testEnvironment": "jsdom"
   },
   "dependencies": {
-    "@babel/core": "^7.25.2",
+    "@babel/cli": "^7.25.6",
     "@babel/preset-env": "^7.25.4",
     "babel-jest": "^29.7.0",
     "cors": "^2.8.5",

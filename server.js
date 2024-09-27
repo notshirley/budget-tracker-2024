@@ -5,7 +5,9 @@ import { JSONFilePreset } from 'lowdb/node';
 import { Expense } from "./modules/expense.js";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*', 
+}));
 app.use(express.json());
 
 const defaultData = { 
@@ -82,7 +84,6 @@ const db = await JSONFilePreset('db.json', defaultData);
           newExpense.date
         );
         await db.update(({ expenses }) => expenses);
-        console.log(expenses[index])
         res.send(expenses[index]);
       } else {
         res.status(404).send({ message: 'Expense not found' });
